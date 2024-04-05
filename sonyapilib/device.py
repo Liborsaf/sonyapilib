@@ -333,11 +333,13 @@ class SonyDevice:
     def _find_device_info(text, info, upnp_device=None):
         upnp_device = upnp_device or f"{URN_UPNP_DEVICE}device"
 
-        return find_in_xml(
+        element = find_in_xml(
             text,
             [upnp_device,
              f"{URN_UPNP_DEVICE}{info}"]
-        ).text
+        )
+
+        return element.text if element else None
 
     def _parse_system_information_v4(self):
         url = urljoin(self.base_url, "system")
