@@ -272,6 +272,15 @@ class SonyDevice:
             self.ircc_url, method=HttpMethod.GET, raise_errors=True)
 
         upnp_device = f"{URN_UPNP_DEVICE}device"
+
+        self.friendly_name = self._find_device_info(response.text, "friendlyName", upnp_device=upnp_device)
+        self.manufacturer = self._find_device_info(response.text, "manufacturer", upnp_device=upnp_device)
+        self.manufacturer_url = self._find_device_info(response.text, "manufacturerURL", upnp_device=upnp_device)
+        self.model_description = self._find_device_info(response.text, "modelDescription", upnp_device=upnp_device)
+        self.model_name = self._find_device_info(response.text, "modelName", upnp_device=upnp_device)
+        self.model_url = self._find_device_info(response.text, "modelURL", upnp_device=upnp_device)
+        # TODO: Find device icon (large, small) urls
+
         # the action list contains everything the device supports
         self.actionlist_url = find_in_xml(
             response.text,
@@ -319,6 +328,16 @@ class SonyDevice:
                 continue
 
             self._ircc_categories.add(category_info.text)
+
+    @staticmethod
+    def _find_device_info(text, info, upnp_device=None):
+        upnp_device = upnp_device or f"{URN_UPNP_DEVICE}device"
+
+        return find_in_xml(
+            text,
+            [upnp_device,
+             f"{URN_UPNP_DEVICE}{info}"]
+        ).text
 
     def _parse_system_information_v4(self):
         url = urljoin(self.base_url, "system")
