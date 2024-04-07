@@ -381,6 +381,13 @@ class SonyDeviceTest(unittest.TestCase):
         self.assertEqual(device.model_name, "Blu-ray Disc Player")
         self.assertEqual(device.model_url, None)
 
+        self.assertEqual(device.icons, [
+            "http://test:50001/bdp_ax3d_device_icon_large.jpg",
+            "http://test:50001/bdp_ax3d_device_icon_large.png",
+            "http://test:50001/bdp_ax3d_device_icon_small.jpg",
+            "http://test:50001/bdp_ax3d_device_icon_small.png"
+        ])
+
     def test_parse_action_list_error(self):
         # just make sure nothing crashes
         device = self.create_device()

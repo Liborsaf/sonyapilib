@@ -163,6 +163,7 @@ class SonyDevice:
         self.model_description = None
         self.model_name = None
         self.model_url = None
+        self.icons = None
 
         # actions are thing like getting status
         self.actions = {}
@@ -179,13 +180,13 @@ class SonyDevice:
         self.dmr_url = f"http://{self.host}:{self.dmr_port}/dmr.xml"
         self.app_url = f"http://{self.host}:{self.app_port}"
         self.base_url = f"http://{self.host}/sony/"
-        ircc_base = f"http://{self.host}:{self.ircc_port}"
+        self.ircc_base = f"http://{self.host}:{self.ircc_port}"
         if self.ircc_port == self.dmr_port:
             self.ircc_url = self.dmr_url
         else:
-            self.ircc_url = urljoin(ircc_base, "/Ircc.xml")
+            self.ircc_url = urljoin(self.ircc_base, "/Ircc.xml")
 
-        self.irccscpd_url = urljoin(ircc_base, "/IRCCSCPD.xml")
+        self.irccscpd_url = urljoin(self.ircc_base, "/IRCCSCPD.xml")
         self._ircc_categories = set()
         self._add_headers()
 
@@ -293,7 +294,15 @@ class SonyDevice:
                                                  upnp_device=upnp_device)
         self.model_url = self._find_device_info(response.text, "modelURL",
                                                 upnp_device=upnp_device)
-        # TODO: Find device icon (large, small) urls
+
+        icons = find_in_xml(
+            response.text,
+            [upnp_device,
+             f"{URN_UPNP_DEVICE}iconList",
+             (f"{URN_UPNP_DEVICE}icon", True),
+             f"{URN_UPNP_DEVICE}url"])
+
+        self.icons = [f"{self.ircc_base}{icon.text}" for icon in icons]
 
         # the action list contains everything the device supports
         self.actionlist_url = find_in_xml(
