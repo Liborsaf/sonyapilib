@@ -302,6 +302,9 @@ class SonyDevice:
              (f"{URN_UPNP_DEVICE}icon", True),
              f"{URN_UPNP_DEVICE}url"])
 
+        if not hasattr(self, 'ircc_base'):
+            self.ircc_base = f"http://{self.host}:{self.ircc_port}"
+
         self.icons = [f"{self.ircc_base}{icon.text}" for icon in icons]
 
         # the action list contains everything the device supports
