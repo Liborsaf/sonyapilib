@@ -156,6 +156,14 @@ class SonyDevice:
         self.dmr_port = dmr_port
         self.ircc_port = ircc_port
 
+        # information about target system
+        self.friendly_name = None
+        self.manufacturer = None
+        self.manufacturer_url = None
+        self.model_description = None
+        self.model_name = None
+        self.model_url = None
+
         # actions are thing like getting status
         self.actions = {}
         self.headers = {}
@@ -273,12 +281,18 @@ class SonyDevice:
 
         upnp_device = f"{URN_UPNP_DEVICE}device"
 
-        self.friendly_name = self._find_device_info(response.text, "friendlyName", upnp_device=upnp_device)
-        self.manufacturer = self._find_device_info(response.text, "manufacturer", upnp_device=upnp_device)
-        self.manufacturer_url = self._find_device_info(response.text, "manufacturerURL", upnp_device=upnp_device)
-        self.model_description = self._find_device_info(response.text, "modelDescription", upnp_device=upnp_device)
-        self.model_name = self._find_device_info(response.text, "modelName", upnp_device=upnp_device)
-        self.model_url = self._find_device_info(response.text, "modelURL", upnp_device=upnp_device)
+        self.friendly_name = self._find_device_info(response.text, "friendlyName",
+                                                    upnp_device=upnp_device)
+        self.manufacturer = self._find_device_info(response.text, "manufacturer",
+                                                   upnp_device=upnp_device)
+        self.manufacturer_url = self._find_device_info(response.text, "manufacturerURL",
+                                                       upnp_device=upnp_device)
+        self.model_description = self._find_device_info(response.text, "modelDescription",
+                                                        upnp_device=upnp_device)
+        self.model_name = self._find_device_info(response.text, "modelName",
+                                                 upnp_device=upnp_device)
+        self.model_url = self._find_device_info(response.text, "modelURL",
+                                                upnp_device=upnp_device)
         # TODO: Find device icon (large, small) urls
 
         # the action list contains everything the device supports
