@@ -353,7 +353,7 @@ class SonyDevice:
              f"{URN_UPNP_DEVICE}{info}"]
         )
 
-        return element.text if element else None
+        return element.text
 
     def _parse_system_information_v4(self):
         url = urljoin(self.base_url, "system")

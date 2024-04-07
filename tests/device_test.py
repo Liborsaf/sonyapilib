@@ -369,6 +369,18 @@ class SonyDeviceTest(unittest.TestCase):
         self.assertEqual(
             device.control_url, 'http://test:50001/upnp/control/IRCC')
 
+    @mock.patch('requests.get', side_effect=mocked_requests_get)
+    def test_system_info_no(self, mock_get):
+        device = self.create_device()
+        device._parse_ircc()
+
+        self.assertEqual(device.friendly_name, "Blu-ray Disc Player")
+        self.assertEqual(device.manufacturer, "Sony Corporation")
+        self.assertEqual(device.manufacturer_url, "http://www.sony.net/")
+        self.assertEqual(device.model_description, None)
+        self.assertEqual(device.model_name, "Blu-ray Disc Player")
+        self.assertEqual(device.model_url, None)
+
     def test_parse_action_list_error(self):
         # just make sure nothing crashes
         device = self.create_device()
