@@ -281,16 +281,16 @@ class SonyDeviceTest(unittest.TestCase):
 
     @mock.patch('requests.get', side_effect=mocked_requests_get)
     @mock.patch('requests.post', side_effect=mocked_requests_post)
-    def test_load_old_json_file(self, mocked_requests_post, mocked_requests_get):
-        content = read_file("data/old.json")
+    def test_load_v0_5_0_json_file(self, mocked_requests_post, mocked_requests_get):
+        content = read_file("data/v0.5.0.json")
         device = SonyDevice.load_from_json(content)
 
         self.verify_json_load_fields(device)
 
     @mock.patch('requests.get', side_effect=mocked_requests_get)
     @mock.patch('requests.post', side_effect=mocked_requests_post)
-    def test_load_new_json_file(self, mocked_requests_post, mocked_requests_get):
-        content = read_file("data/new.json")
+    def test_load_v0_6_0_json_file(self, mocked_requests_post, mocked_requests_get):
+        content = read_file("data/v0.6.0.json")
         device = SonyDevice.load_from_json(content)
 
         self.verify_json_load_fields(device)
