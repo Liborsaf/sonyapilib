@@ -138,6 +138,7 @@ class SonyDevice:
     """Contains all data for the device."""
 
     def __init__(self, host, nickname, psk=None,
+                 broadcast_address="255.255.255.255",
                  app_port=50202, dmr_port=52323, ircc_port=50001,
                  client_id=None):
         # pylint: disable=too-many-arguments
@@ -151,6 +152,8 @@ class SonyDevice:
         self.rendering_control_url = None
         self.app_url = None
         self.psk = psk
+
+        self.broadcast_address = broadcast_address
 
         self.app_port = app_port
         self.dmr_port = dmr_port
@@ -787,7 +790,9 @@ class SonyDevice:
 
     def wakeonlan(self, broadcast=None):
         """Start the device via wakeonlan."""
-        broadcast = broadcast or '255.255.255.255'
+        broadcast = broadcast or (self.broadcast_address
+                                  if hasattr(self, 'broadcast_address')
+                                  else "255.255.255.255")
         if self.mac:
             wakeonlan.send_magic_packet(self.mac, ip_address=broadcast)
 
@@ -884,7 +889,7 @@ class SonyDevice:
             self._send_http(url, HttpMethod.POST,
                             cookies=self._recreate_auth_cookie())
 
-    def power(self, power_on, broadcast='255.255.255.255'):
+    def power(self, power_on, broadcast=None):
         """Powers the device on or shuts it off."""
         if power_on:
             self.wakeonlan(broadcast)
