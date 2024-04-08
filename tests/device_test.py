@@ -990,10 +990,29 @@ class SonyDeviceTest(unittest.TestCase):
         self.assertEqual(device.rendering_control_url, "http://test:52323/upnp/control/RenderingControl")
         self.assertEqual(device.ircc_base, "http://test:50001")
 
-        self.verify_system_info_fields(device, "BDP-S5500", "BDP-2015")
+        self.verify_system_info_fields(device, "BDP-S5500", "BDP-2015", [
+            "http://test:50001/bdp_ax_device_icon_large.jpg",
+            "http://test:50001/bdp_ax_device_icon_large.png",
+            "http://test:50001/bdp_ax_device_icon_small.jpg",
+            "http://test:50001/bdp_ax_device_icon_small.png"
+        ])
 
-    def verify_system_info_fields(self, device, model_name="Blu-ray Disc Player", model_number=None):
+    def verify_system_info_fields(
+            self,
+            device,
+            model_name="Blu-ray Disc Player",
+            model_number=None,
+            icons=None
+    ):
         """Make sure all system fields are present in the device."""
+        if not icons:
+            icons = [
+                "http://test:50001/bdp_ax3d_device_icon_large.jpg",
+                "http://test:50001/bdp_ax3d_device_icon_large.png",
+                "http://test:50001/bdp_ax3d_device_icon_small.jpg",
+                "http://test:50001/bdp_ax3d_device_icon_small.png"
+            ]
+
         self.assertEqual(device.friendly_name, "Blu-ray Disc Player")
         self.assertEqual(device.manufacturer, "Sony Corporation")
         self.assertEqual(device.manufacturer_url, "http://www.sony.net/")
@@ -1002,12 +1021,7 @@ class SonyDeviceTest(unittest.TestCase):
         self.assertEqual(device.model_url, None)
         self.assertEqual(device.model_number, model_number)
 
-        self.assertEqual(device.icons, [
-            "http://test:50001/bdp_ax3d_device_icon_large.jpg",
-            "http://test:50001/bdp_ax3d_device_icon_large.png",
-            "http://test:50001/bdp_ax3d_device_icon_small.jpg",
-            "http://test:50001/bdp_ax3d_device_icon_small.png"
-        ])
+        self.assertEqual(device.icons, icons)
 
     def verify_device_dmr(self, device):
         """Make sure a dmr has been set"""

@@ -365,6 +365,9 @@ class SonyDevice:
             upnp_device=upnp_device
         ))
 
+        if hasattr(self, 'icons') and self.icons:
+            return
+
         icons = find_in_xml(
             text,
             [upnp_device,

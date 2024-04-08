@@ -20,10 +20,10 @@
 	"model_url": null,
 	"model_number": "BDP-2015",
 	"icons": [
-		"http://test:50001/bdp_ax3d_device_icon_large.jpg",
-		"http://test:50001/bdp_ax3d_device_icon_large.png",
-		"http://test:50001/bdp_ax3d_device_icon_small.jpg",
-		"http://test:50001/bdp_ax3d_device_icon_small.png"
+		"http://test:50001/bdp_ax_device_icon_large.jpg",
+		"http://test:50001/bdp_ax_device_icon_large.png",
+		"http://test:50001/bdp_ax_device_icon_small.jpg",
+		"http://test:50001/bdp_ax_device_icon_small.png"
 	],
 	"actions": {
 		"register": {
