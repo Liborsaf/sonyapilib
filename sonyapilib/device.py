@@ -743,7 +743,9 @@ class SonyDevice:
 
     def wakeonlan(self, broadcast=None):
         """Start the device via wakeonlan."""
-        broadcast = broadcast or (self.broadcast_address if hasattr(self, 'broadcast_address') else "255.255.255.255")
+        broadcast = broadcast or (self.broadcast_address
+                                  if hasattr(self, 'broadcast_address')
+                                  else "255.255.255.255")
         if self.mac:
             wakeonlan.send_magic_packet(self.mac, ip_address=broadcast)
 
