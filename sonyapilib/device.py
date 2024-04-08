@@ -842,7 +842,7 @@ class SonyDevice:
             self._send_http(url, HttpMethod.POST,
                             cookies=self._recreate_auth_cookie())
 
-    def power(self, power_on, broadcast='255.255.255.255'):
+    def power(self, power_on, broadcast=None):
         """Powers the device on or shuts it off."""
         if power_on:
             self.wakeonlan(broadcast)
