@@ -178,7 +178,8 @@ class SonyDevice:
         self.mac = None
         self.api_version = 0
 
-        self.dmr_url = f"http://{self.host}:{self.dmr_port}/dmr.xml"
+        self.dmr_base = f"http://{self.host}:{self.dmr_port}"
+        self.dmr_url = f"{self.dmr_base}/dmr.xml"
         self.app_url = f"http://{self.host}:{self.app_port}"
         self.base_url = f"http://{self.host}/sony/"
         self.ircc_base = f"http://{self.host}:{self.ircc_port}"
@@ -283,7 +284,11 @@ class SonyDevice:
 
         upnp_device = f"{URN_UPNP_DEVICE}device"
 
-        self._parse_system_info(response.text, upnp_device)
+        if not hasattr(self, 'ircc_base'):
+            self.ircc_base = f"http://{self.host}:{self.ircc_port}"
+
+        self._parse_system_info(response.text, self.ircc_base,
+                                upnp_device=upnp_device)
 
         # the action list contains everything the device supports
         self.actionlist_url = find_in_xml(
@@ -333,7 +338,7 @@ class SonyDevice:
 
             self._ircc_categories.add(category_info.text)
 
-    def _parse_system_info(self, text, upnp_device=None):
+    def _parse_system_info(self, text, base_url, upnp_device=None):
         upnp_device = upnp_device or f"{URN_UPNP_DEVICE}device"
 
         self._set_system_info('friendly_name', self._find_device_info(
@@ -375,10 +380,7 @@ class SonyDevice:
              (f"{URN_UPNP_DEVICE}icon", True),
              f"{URN_UPNP_DEVICE}url"])
 
-        if not hasattr(self, 'ircc_base'):
-            self.ircc_base = f"http://{self.host}:{self.ircc_port}"
-
-        self.icons = [f"{self.ircc_base}{icon.text}" for icon in icons]
+        self.icons = [f"{base_url}{icon.text}" for icon in icons]
 
     def _set_system_info(self, attribute, value):
         if not hasattr(self, attribute):
@@ -428,7 +430,10 @@ class SonyDevice:
                         "functionItem").attrib["value"]
 
     def _parse_dmr(self, data):
-        self._parse_system_info(data)
+        if not hasattr(self, 'dmr_base'):
+            self.dmr_base = f"http://{self.host}:{self.dmr_port}"
+
+        self._parse_system_info(data, self.dmr_base)
 
         lirc_url = urlparse(self.ircc_url)
         xml_data = xml.etree.ElementTree.fromstring(data)

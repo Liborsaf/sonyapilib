@@ -20,10 +20,10 @@
 	"model_url": null,
 	"model_number": "BDP-2015",
 	"icons": [
-		"http://test:50001/bdp_ax_device_icon_large.jpg",
-		"http://test:50001/bdp_ax_device_icon_large.png",
-		"http://test:50001/bdp_ax_device_icon_small.jpg",
-		"http://test:50001/bdp_ax_device_icon_small.png"
+		"http://test:52323/bdp_ax_device_icon_large.jpg",
+		"http://test:52323/bdp_ax_device_icon_large.png",
+		"http://test:52323/bdp_ax_device_icon_small.jpg",
+		"http://test:52323/bdp_ax_device_icon_small.png"
 	],
 	"actions": {
 		"register": {
@@ -667,6 +667,7 @@
 	},
 	"mac": "30-52-cb-cc-16-ee",
 	"api_version": 3,
+	"dmr_base": "http://test:52323",
 	"dmr_url": "http://test:52323/dmr.xml",
 	"base_url": "http://test/sony/",
 	"ircc_base": "http://test:50001",

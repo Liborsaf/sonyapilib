@@ -397,7 +397,7 @@ class SonyDeviceTest(unittest.TestCase):
         device = self.create_device()
         response = device._send_http(device.ircc_url, method=HttpMethod.GET, raise_errors=True)
 
-        device._parse_system_info(response.text)
+        device._parse_system_info(response.text, device.ircc_base)
 
         self.verify_system_info_fields(device)
 
@@ -988,13 +988,14 @@ class SonyDeviceTest(unittest.TestCase):
     def verify_json_load_fields(self, device):
         """Make sure all "new" fields are present in the json."""
         self.assertEqual(device.rendering_control_url, "http://test:52323/upnp/control/RenderingControl")
+        self.assertEqual(device.dmr_base, "http://test:52323")
         self.assertEqual(device.ircc_base, "http://test:50001")
 
         self.verify_system_info_fields(device, "BDP-S5500", "BDP-2015", [
-            "http://test:50001/bdp_ax_device_icon_large.jpg",
-            "http://test:50001/bdp_ax_device_icon_large.png",
-            "http://test:50001/bdp_ax_device_icon_small.jpg",
-            "http://test:50001/bdp_ax_device_icon_small.png"
+            "http://test:52323/bdp_ax_device_icon_large.jpg",
+            "http://test:52323/bdp_ax_device_icon_large.png",
+            "http://test:52323/bdp_ax_device_icon_small.jpg",
+            "http://test:52323/bdp_ax_device_icon_small.png"
         ])
 
     def verify_system_info_fields(
