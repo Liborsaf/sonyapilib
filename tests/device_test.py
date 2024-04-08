@@ -20,7 +20,7 @@ sys.path.insert(0, current_dir[:current_dir.rfind(os.path.sep)])
 # otherwise it must be installed after every change
 import sonyapilib.device  # import  to change timeout
 from sonyapilib.ssdp import SSDPResponse
-from sonyapilib.device import SonyDevice, XmlApiObject, AuthenticationResult
+from sonyapilib.device import SonyDevice, XmlApiObject, AuthenticationResult, HttpMethod
 sys.path.pop(0)
 
 
@@ -368,6 +368,13 @@ class SonyDeviceTest(unittest.TestCase):
             device.actionlist_url, ACTION_LIST_URL)
         self.assertEqual(
             device.control_url, 'http://test:50001/upnp/control/IRCC')
+
+    @mock.patch('requests.get', side_effect=mocked_requests_get)
+    def test_find_device_info_none_upnp_device(self, mock_get):
+        device = self.create_device()
+        response = device._send_http(device.ircc_url, method=HttpMethod.GET, raise_errors=True)
+
+        self.assertEqual(device._find_device_info(response.text, "friendlyName"), "Blu-ray Disc Player")
 
     @mock.patch('requests.get', side_effect=mocked_requests_get)
     def test_system_info_no(self, mock_get):
