@@ -393,6 +393,28 @@ class SonyDeviceTest(unittest.TestCase):
         self.assertEqual(device._find_device_info(response.text, "friendlyName"), "Blu-ray Disc Player")
 
     @mock.patch('requests.get', side_effect=mocked_requests_get)
+    def test_parse_system_info_none_upnp_device(self, mock_get):
+        device = self.create_device()
+        response = device._send_http(device.ircc_url, method=HttpMethod.GET, raise_errors=True)
+
+        device._parse_system_info(response.text)
+
+        self.verify_system_info_fields(device)
+
+    def test_set_system_info(self):
+        device = self.create_device()
+        self.assertEqual(hasattr(device, "test"), False)
+
+        device._set_system_info("test", None)
+        self.assertEqual(hasattr(device, "test"), True)
+
+        device._set_system_info("test", "test1")
+        self.assertEqual(getattr(device, "test"), "test1")
+
+        device._set_system_info("test", "test2")
+        self.assertEqual(getattr(device, "test"), "test1")
+
+    @mock.patch('requests.get', side_effect=mocked_requests_get)
     def test_system_info(self, mock_get):
         device = self.create_device()
         device._parse_ircc()
@@ -968,16 +990,17 @@ class SonyDeviceTest(unittest.TestCase):
         self.assertEqual(device.rendering_control_url, "http://test:52323/upnp/control/RenderingControl")
         self.assertEqual(device.ircc_base, "http://test:50001")
 
-        self.verify_system_info_fields(device)
+        self.verify_system_info_fields(device, "BDP-S5500", "BDP-2015")
 
-    def verify_system_info_fields(self, device):
+    def verify_system_info_fields(self, device, model_name="Blu-ray Disc Player", model_number=None):
         """Make sure all system fields are present in the device."""
         self.assertEqual(device.friendly_name, "Blu-ray Disc Player")
         self.assertEqual(device.manufacturer, "Sony Corporation")
         self.assertEqual(device.manufacturer_url, "http://www.sony.net/")
         self.assertEqual(device.model_description, None)
-        self.assertEqual(device.model_name, "Blu-ray Disc Player")
+        self.assertEqual(device.model_name, model_name)
         self.assertEqual(device.model_url, None)
+        self.assertEqual(device.model_number, model_number)
 
         self.assertEqual(device.icons, [
             "http://test:50001/bdp_ax3d_device_icon_large.jpg",

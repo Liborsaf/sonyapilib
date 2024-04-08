@@ -163,6 +163,7 @@ class SonyDevice:
         self.model_description = None
         self.model_name = None
         self.model_url = None
+        self.model_number = None
         self.icons = None
 
         # actions are thing like getting status
@@ -282,30 +283,7 @@ class SonyDevice:
 
         upnp_device = f"{URN_UPNP_DEVICE}device"
 
-        self.friendly_name = self._find_device_info(response.text, "friendlyName",
-                                                    upnp_device=upnp_device)
-        self.manufacturer = self._find_device_info(response.text, "manufacturer",
-                                                   upnp_device=upnp_device)
-        self.manufacturer_url = self._find_device_info(response.text, "manufacturerURL",
-                                                       upnp_device=upnp_device)
-        self.model_description = self._find_device_info(response.text, "modelDescription",
-                                                        upnp_device=upnp_device)
-        self.model_name = self._find_device_info(response.text, "modelName",
-                                                 upnp_device=upnp_device)
-        self.model_url = self._find_device_info(response.text, "modelURL",
-                                                upnp_device=upnp_device)
-
-        icons = find_in_xml(
-            response.text,
-            [upnp_device,
-             f"{URN_UPNP_DEVICE}iconList",
-             (f"{URN_UPNP_DEVICE}icon", True),
-             f"{URN_UPNP_DEVICE}url"])
-
-        if not hasattr(self, 'ircc_base'):
-            self.ircc_base = f"http://{self.host}:{self.ircc_port}"
-
-        self.icons = [f"{self.ircc_base}{icon.text}" for icon in icons]
+        self._parse_system_info(response.text, upnp_device)
 
         # the action list contains everything the device supports
         self.actionlist_url = find_in_xml(
@@ -355,6 +333,56 @@ class SonyDevice:
 
             self._ircc_categories.add(category_info.text)
 
+    def _parse_system_info(self, text, upnp_device=None):
+        upnp_device = upnp_device or f"{URN_UPNP_DEVICE}device"
+
+        self._set_system_info('friendly_name', self._find_device_info(
+            text, "friendlyName",
+            upnp_device=upnp_device
+        ))
+        self._set_system_info('manufacturer', self._find_device_info(
+            text, "manufacturer",
+            upnp_device=upnp_device
+        ))
+        self._set_system_info('manufacturer_url', self._find_device_info(
+            text, "manufacturerURL",
+            upnp_device=upnp_device
+        ))
+        self._set_system_info('model_description', self._find_device_info(
+            text, "modelDescription",
+            upnp_device=upnp_device
+        ))
+        self._set_system_info('model_name', self._find_device_info(
+            text, "modelName",
+            upnp_device=upnp_device
+        ))
+        self._set_system_info('model_url', self._find_device_info(
+            text, "modelURL",
+            upnp_device=upnp_device
+        ))
+        self._set_system_info('model_number', self._find_device_info(
+            text, "modelNumber",
+            upnp_device=upnp_device
+        ))
+
+        icons = find_in_xml(
+            text,
+            [upnp_device,
+             f"{URN_UPNP_DEVICE}iconList",
+             (f"{URN_UPNP_DEVICE}icon", True),
+             f"{URN_UPNP_DEVICE}url"])
+
+        if not hasattr(self, 'ircc_base'):
+            self.ircc_base = f"http://{self.host}:{self.ircc_port}"
+
+        self.icons = [f"{self.ircc_base}{icon.text}" for icon in icons]
+
+    def _set_system_info(self, attribute, value):
+        if not hasattr(self, attribute):
+            setattr(self, attribute, value)
+        elif value and not getattr(self, attribute):
+            setattr(self, attribute, value)
+
     @staticmethod
     def _find_device_info(text, info, upnp_device=None):
         upnp_device = upnp_device or f"{URN_UPNP_DEVICE}device"
@@ -365,7 +393,7 @@ class SonyDevice:
              f"{URN_UPNP_DEVICE}{info}"]
         )
 
-        return element.text
+        return element.text if element is not None else None
 
     def _parse_system_information_v4(self):
         url = urljoin(self.base_url, "system")
@@ -397,6 +425,8 @@ class SonyDevice:
                         "functionItem").attrib["value"]
 
     def _parse_dmr(self, data):
+        self._parse_system_info(data)
+
         lirc_url = urlparse(self.ircc_url)
         xml_data = xml.etree.ElementTree.fromstring(data)
 

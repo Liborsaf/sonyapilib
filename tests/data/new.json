@@ -16,8 +16,9 @@
 	"manufacturer": "Sony Corporation",
 	"manufacturer_url": "http://www.sony.net/",
 	"model_description": null,
-	"model_name": "Blu-ray Disc Player",
+	"model_name": "BDP-S5500",
 	"model_url": null,
+	"model_number": "BDP-2015",
 	"icons": [
 		"http://test:50001/bdp_ax3d_device_icon_large.jpg",
 		"http://test:50001/bdp_ax3d_device_icon_large.png",
