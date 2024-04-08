@@ -280,6 +280,22 @@ class SonyDeviceTest(unittest.TestCase):
         device._update_service_urls()
 
     @mock.patch('requests.get', side_effect=mocked_requests_get)
+    @mock.patch('requests.post', side_effect=mocked_requests_post)
+    def test_load_old_json_file(self, mocked_requests_post, mocked_requests_get):
+        content = read_file("data/old.json")
+        device = SonyDevice.load_from_json(content)
+
+        self.verify_json_load_fields(device)
+
+    @mock.patch('requests.get', side_effect=mocked_requests_get)
+    @mock.patch('requests.post', side_effect=mocked_requests_post)
+    def test_load_new_json_file(self, mocked_requests_post, mocked_requests_get):
+        content = read_file("data/new.json")
+        device = SonyDevice.load_from_json(content)
+
+        self.verify_json_load_fields(device)
+
+    @mock.patch('requests.get', side_effect=mocked_requests_get)
     @mock.patch('sonyapilib.device.SonyDevice._parse_ircc', side_effect=mock_error)
     def test_update_service_urls_error_processing(self, mock_error, mocked_requests_get):
         device = self.create_device()
@@ -377,23 +393,11 @@ class SonyDeviceTest(unittest.TestCase):
         self.assertEqual(device._find_device_info(response.text, "friendlyName"), "Blu-ray Disc Player")
 
     @mock.patch('requests.get', side_effect=mocked_requests_get)
-    def test_system_info_no(self, mock_get):
+    def test_system_info(self, mock_get):
         device = self.create_device()
         device._parse_ircc()
 
-        self.assertEqual(device.friendly_name, "Blu-ray Disc Player")
-        self.assertEqual(device.manufacturer, "Sony Corporation")
-        self.assertEqual(device.manufacturer_url, "http://www.sony.net/")
-        self.assertEqual(device.model_description, None)
-        self.assertEqual(device.model_name, "Blu-ray Disc Player")
-        self.assertEqual(device.model_url, None)
-
-        self.assertEqual(device.icons, [
-            "http://test:50001/bdp_ax3d_device_icon_large.jpg",
-            "http://test:50001/bdp_ax3d_device_icon_large.png",
-            "http://test:50001/bdp_ax3d_device_icon_small.jpg",
-            "http://test:50001/bdp_ax3d_device_icon_small.png"
-        ])
+        self.verify_system_info_fields(device)
 
     def test_parse_action_list_error(self):
         # just make sure nothing crashes
@@ -958,6 +962,29 @@ class SonyDeviceTest(unittest.TestCase):
         device.api_version = 3
         device.cookies = jsonpickle.decode(read_file("data/cookies.json"))
         return device
+
+    def verify_json_load_fields(self, device):
+        """Make sure all "new" fields are present in the json."""
+        self.assertEqual(device.rendering_control_url, "http://test:52323/upnp/control/RenderingControl")
+        self.assertEqual(device.ircc_base, "http://test:50001")
+
+        self.verify_system_info_fields(device)
+
+    def verify_system_info_fields(self, device):
+        """Make sure all system fields are present in the device."""
+        self.assertEqual(device.friendly_name, "Blu-ray Disc Player")
+        self.assertEqual(device.manufacturer, "Sony Corporation")
+        self.assertEqual(device.manufacturer_url, "http://www.sony.net/")
+        self.assertEqual(device.model_description, None)
+        self.assertEqual(device.model_name, "Blu-ray Disc Player")
+        self.assertEqual(device.model_url, None)
+
+        self.assertEqual(device.icons, [
+            "http://test:50001/bdp_ax3d_device_icon_large.jpg",
+            "http://test:50001/bdp_ax3d_device_icon_large.png",
+            "http://test:50001/bdp_ax3d_device_icon_small.jpg",
+            "http://test:50001/bdp_ax3d_device_icon_small.png"
+        ])
 
     def verify_device_dmr(self, device):
         """Make sure a dmr has been set"""
