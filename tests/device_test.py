@@ -401,17 +401,17 @@ class SonyDeviceTest(unittest.TestCase):
 
         self.verify_system_info_fields(device)
 
-    def test_set_system_info(self):
+    def test_set_value(self):
         device = self.create_device()
         self.assertEqual(hasattr(device, "test"), False)
 
-        device._set_system_info("test", None)
+        device._set_value("test", None)
         self.assertEqual(hasattr(device, "test"), True)
 
-        device._set_system_info("test", "test1")
+        device._set_value("test", "test1")
         self.assertEqual(getattr(device, "test"), "test1")
 
-        device._set_system_info("test", "test2")
+        device._set_value("test", "test2")
         self.assertEqual(getattr(device, "test"), "test1")
 
     @mock.patch('requests.get', side_effect=mocked_requests_get)
