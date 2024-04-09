@@ -284,8 +284,7 @@ class SonyDevice:
 
         upnp_device = f"{URN_UPNP_DEVICE}device"
 
-        if not hasattr(self, 'ircc_base'):
-            self.ircc_base = f"http://{self.host}:{self.ircc_port}"
+        self._set_value('ircc_base', f"http://{self.host}:{self.ircc_port}")
 
         self._parse_system_info(response.text, self.ircc_base,
                                 upnp_device=upnp_device)
@@ -341,31 +340,31 @@ class SonyDevice:
     def _parse_system_info(self, text, base_url, upnp_device=None):
         upnp_device = upnp_device or f"{URN_UPNP_DEVICE}device"
 
-        self._set_system_info('friendly_name', self._find_device_info(
+        self._set_value('friendly_name', self._find_device_info(
             text, "friendlyName",
             upnp_device=upnp_device
         ))
-        self._set_system_info('manufacturer', self._find_device_info(
+        self._set_value('manufacturer', self._find_device_info(
             text, "manufacturer",
             upnp_device=upnp_device
         ))
-        self._set_system_info('manufacturer_url', self._find_device_info(
+        self._set_value('manufacturer_url', self._find_device_info(
             text, "manufacturerURL",
             upnp_device=upnp_device
         ))
-        self._set_system_info('model_description', self._find_device_info(
+        self._set_value('model_description', self._find_device_info(
             text, "modelDescription",
             upnp_device=upnp_device
         ))
-        self._set_system_info('model_name', self._find_device_info(
+        self._set_value('model_name', self._find_device_info(
             text, "modelName",
             upnp_device=upnp_device
         ))
-        self._set_system_info('model_url', self._find_device_info(
+        self._set_value('model_url', self._find_device_info(
             text, "modelURL",
             upnp_device=upnp_device
         ))
-        self._set_system_info('model_number', self._find_device_info(
+        self._set_value('model_number', self._find_device_info(
             text, "modelNumber",
             upnp_device=upnp_device
         ))
@@ -381,12 +380,6 @@ class SonyDevice:
              f"{URN_UPNP_DEVICE}url"])
 
         self.icons = [f"{base_url}{icon.text}" for icon in icons]
-
-    def _set_system_info(self, attribute, value):
-        if not hasattr(self, attribute):
-            setattr(self, attribute, value)
-        elif value and not getattr(self, attribute):
-            setattr(self, attribute, value)
 
     @staticmethod
     def _find_device_info(text, info, upnp_device=None):
@@ -430,8 +423,7 @@ class SonyDevice:
                         "functionItem").attrib["value"]
 
     def _parse_dmr(self, data):
-        if not hasattr(self, 'dmr_base'):
-            self.dmr_base = f"http://{self.host}:{self.dmr_port}"
+        self._set_value('dmr_base', f"http://{self.host}:{self.dmr_port}")
 
         self._parse_system_info(data, self.dmr_base)
 
@@ -778,6 +770,12 @@ class SonyDevice:
         cookies = requests.cookies.RequestsCookieJar()
         cookies.set("auth", self.cookies.get("auth"))
         return cookies
+
+    def _set_value(self, attribute, value):
+        if not hasattr(self, attribute):
+            setattr(self, attribute, value)
+        elif value and not getattr(self, attribute):
+            setattr(self, attribute, value)
 
     def register(self):
         """Register at the api.
